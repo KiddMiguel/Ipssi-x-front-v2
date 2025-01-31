@@ -1,31 +1,46 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import { useState } from 'react';
-import { Link, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
-import '../../global.css';
-import Global from '@/constants/Global';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import { useState } from "react";
+import { Link, useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../Redux/auth/authSlice";
+import "../../global.css";
+import Global from "@/constants/Global";
 
 export default function LoginScreen() {
   const [credentials, setCredentials] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { status, error } = useSelector((state) => state.auth);
 
-  const handleSubmit = () => {
-    // Ici vous ajouterez la logique de connexion
-    console.log('Login attempt:', credentials);
+  const handleSubmit = async () => {
+    try {
+      await dispatch(login(credentials)).unwrap();
+      router.replace("/(tabs)");
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert(error.message || "Une erreur est survenue");
+    }
   };
 
   return (
     <SafeAreaView style={Global.container}>
-      <ScrollView >
+      <ScrollView>
         <View className="bg-white rounded-lg shadow-lg p-8">
           <View className="items-center mb-8">
             <Feather name="twitter" size={32} color="#3b82f6" />
           </View>
-          
+
           <Text className="text-2xl font-bold text-center mb-8">
             Connectez-vous à X
           </Text>
@@ -42,7 +57,9 @@ export default function LoginScreen() {
                 placeholder="nom@exemple.com"
                 keyboardType="email-address"
                 value={credentials.email}
-                onChangeText={(text) => setCredentials({...credentials, email: text})}
+                onChangeText={(text) =>
+                  setCredentials({ ...credentials, email: text })
+                }
               />
             </View>
 
@@ -56,7 +73,9 @@ export default function LoginScreen() {
                 placeholder="••••••••"
                 secureTextEntry
                 value={credentials.password}
-                onChangeText={(text) => setCredentials({...credentials, password: text})}
+                onChangeText={(text) =>
+                  setCredentials({ ...credentials, password: text })
+                }
               />
             </View>
 
@@ -88,8 +107,11 @@ export default function LoginScreen() {
             {/* Register Link */}
             <View className="mt-6">
               <Text className="text-sm text-gray-600 text-center">
-                Pas encore de compte ?{' '}
-                <Link href="/auth/register" className="text-blue-500 font-medium">
+                Pas encore de compte ?{" "}
+                <Link
+                  href="/auth/register"
+                  className="text-blue-500 font-medium"
+                >
                   Inscrivez-vous
                 </Link>
               </Text>
