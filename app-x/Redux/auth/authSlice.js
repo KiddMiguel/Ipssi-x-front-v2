@@ -36,6 +36,11 @@ export const authSlice = createSlice({
     setState: (state, action) => {
       return { ...state, ...action.payload };
     },
+    setUser: (state, action) => {
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+    },
     logout: (state) => {
       AsyncStorage.removeItem("token");
       AsyncStorage.removeItem("user");
@@ -102,6 +107,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setState, logout, clearError } = authSlice.actions;
+export const { setState, setUser, logout, clearError } = authSlice.actions;
 export { register, login, getUsers };
 export default authSlice.reducer;
