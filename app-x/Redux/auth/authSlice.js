@@ -12,20 +12,36 @@ const initialState = {
   users: [],
 };
 
+// Fonction pour récupérer l'état initial depuis le cache
 export const initializeState = async () => {
   try {
     const token = await AsyncStorage.getItem("token");
     const userStr = await AsyncStorage.getItem("user");
     const user = userStr ? JSON.parse(userStr) : null;
-    return {
-      ...initialState,
-      isAuthenticated: !!token,
-      user,
-      token,
-    };
+
+    if (token && user) {
+      console.log("User found in cache:", user);
+      return {
+        ...initialState,
+        isAuthenticated: true,
+        user,
+        token,
+      };
+    }
+    return initialState;
   } catch (error) {
     console.error("Error loading initial state:", error);
     return initialState;
+  }
+};
+
+// Fonction pour sauvegarder les données utilisateur
+const saveUserData = async (token, user) => {
+  try {
+    await AsyncStorage.setItem("token", token);
+    await AsyncStorage.setItem("user", JSON.stringify(user));
+  } catch (error) {
+    console.error("Error saving user data:", error);
   }
 };
 
@@ -42,12 +58,12 @@ export const authSlice = createSlice({
       state.token = action.payload.token;
     },
     logout: (state) => {
-      AsyncStorage.removeItem("token");
-      AsyncStorage.removeItem("user");
-      state.isAuthenticated = false;
-      state.isNew = false;
-      state.user = null;
-      state.token = null;
+      // Nettoyage asynchrone du cache
+      AsyncStorage.multiRemove(["token", "user"]).catch(console.error);
+      return {
+        ...initialState,
+        status: 'idle'
+      };
     },
     clearError: (state) => {
       state.error = null;
@@ -64,8 +80,8 @@ export const authSlice = createSlice({
       state.isNew = true;
       state.user = action.payload.user;
       state.token = action.payload.token;
-      AsyncStorage.setItem("token", action.payload.token);
-      AsyncStorage.setItem("user", JSON.stringify(action.payload.user));
+      // Sauvegarde asynchrone
+      saveUserData(action.payload.token, action.payload.user);
     });
     builder.addCase(register.rejected, (state, action) => {
       state.status = "failed";
@@ -84,8 +100,8 @@ export const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.error = null;
-      AsyncStorage.setItem("token", action.payload.token);
-      AsyncStorage.setItem("user", JSON.stringify(action.payload.user));
+      // Sauvegarde asynchrone
+      saveUserData(action.payload.token, action.payload.user);
     });
     builder.addCase(login.rejected, (state, action) => {
       state.status = "failed";

@@ -8,7 +8,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../../Redux/auth/authSlice";
+import { logout } from "../../../redux/auth/authSlice";
 import { useRouter } from "expo-router";
 import ChatListItem from "@/components/ChatListItem";
 import Global from "@/constants/Global";
