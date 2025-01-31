@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../Redux/auth/authSlice";
 import "../../global.css";
 import Global from "@/constants/Global";
-
+ 
 export default function LoginScreen() {
   const [credentials, setCredentials] = useState({
     email: "",
@@ -22,7 +22,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { status, error } = useSelector((state) => state.auth);
-
+ 
   const handleSubmit = async () => {
     try {
       await dispatch(login(credentials)).unwrap();
@@ -32,7 +32,7 @@ export default function LoginScreen() {
       alert(error.message || "Une erreur est survenue");
     }
   };
-
+ 
   return (
     <SafeAreaView style={Global.container}>
       <ScrollView>
@@ -40,11 +40,11 @@ export default function LoginScreen() {
           <View className="items-center mb-8">
             <Feather name="twitter" size={32} color="#3b82f6" />
           </View>
-
+ 
           <Text className="text-2xl font-bold text-center mb-8">
             Connectez-vous à X
           </Text>
-
+ 
           {/* Form */}
           <View className="space-y-6">
             {/* Email Input */}
@@ -62,7 +62,7 @@ export default function LoginScreen() {
                 }
               />
             </View>
-
+ 
             {/* Password Input */}
             <View>
               <Text className="text-sm font-medium text-gray-700 mb-1">
@@ -78,7 +78,7 @@ export default function LoginScreen() {
                 }
               />
             </View>
-
+ 
             {/* Remember me and Forgot password */}
             <View className="flex-row justify-between items-center">
               <View className="flex-row items-center">
@@ -93,7 +93,7 @@ export default function LoginScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
-
+ 
             {/* Login Button */}
             <TouchableOpacity
               className="w-full bg-blue-500 p-3 rounded-md"
@@ -103,7 +103,7 @@ export default function LoginScreen() {
                 Se connecter
               </Text>
             </TouchableOpacity>
-
+ 
             {/* Register Link */}
             <View className="mt-6">
               <Text className="text-sm text-gray-600 text-center">

@@ -47,7 +47,7 @@ function TabLayoutContent() {
       }}
     >
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
           title: "Accueil",
           tabBarIcon: ({ color }) => (
