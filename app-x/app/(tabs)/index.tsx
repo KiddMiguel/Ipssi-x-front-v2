@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
-import { logout } from "../../Redux/auth/authSlice";
+import { logout } from "../../redux/auth/authSlice";
 import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
