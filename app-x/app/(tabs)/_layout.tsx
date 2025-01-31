@@ -15,7 +15,7 @@ export default function TabLayout() {
   const checkToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (!token) {
-      router.replace('/auth/login');
+      router.replace('/welcome');
     } else {
       router.replace('/(tabs)/home');
     }
