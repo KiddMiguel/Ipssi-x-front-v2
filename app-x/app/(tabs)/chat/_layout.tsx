@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 
 export default function ChatLayout() {
   return (
@@ -6,9 +7,12 @@ export default function ChatLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerStyle: {
-            backgroundColor: '#fff',
-          },
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="[id]"
+        options={{
           headerShown: false,
         }}
       />
