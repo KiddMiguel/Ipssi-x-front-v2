@@ -1,35 +1,47 @@
-import { Tabs, useRouter, useSegments } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
-import { useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import '../../global.css';
+import { Tabs, useRouter, useSegments } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { store } from "../../Redux/store";
+import { login } from "../../Redux/auth/authSlice";
+import "../../global.css";
 
-export default function TabLayout() {
+function TabLayoutContent() {
   const router = useRouter();
-  const segments = useSegments();
+  const dispatch = useDispatch();
+  const { isAuthenticated, status } = useSelector((state) => state.auth);
 
   useEffect(() => {
     checkToken();
-  }, []);
+  }, [dispatch]);
 
   const checkToken = async () => {
-    const token = await AsyncStorage.getItem('token');
-    if (!token) {
-      router.replace('/(tabs)');
-    } else {
-      router.replace('/(tabs)/home');
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const userStr = await AsyncStorage.getItem("user");
+      if (token && userStr) {
+        const user = JSON.parse(userStr);
+        await dispatch(login({ token, user }));
+        router.replace("/(tabs)");
+      } else {
+        router.replace("/auth/login");
+      }
+    } catch (error) {
+      console.error("Error checking token:", error);
+      router.replace("/auth/login");
     }
   };
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#3b82f6',
-        tabBarInactiveTintColor: '#6b7280',
+        tabBarActiveTintColor: "#3b82f6",
+        tabBarInactiveTintColor: "#6b7280",
         tabBarStyle: {
-          backgroundColor: 'white',
+          backgroundColor: "white",
           borderTopWidth: 1,
-          borderTopColor: '#e5e7eb',
+          borderTopColor: "#e5e7eb",
         },
         headerShown: false,
       }}
@@ -37,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Accueil',
+          title: "Accueil",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="home" size={24} color={color} />
           ),
@@ -46,7 +58,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="chat"
         options={{
-          title: 'Chat',
+          title: "Chat",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="comments" size={24} color={color} />
           ),
@@ -55,12 +67,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notification"
         options={{
-          title: 'Notifications',
+          title: "Notifications",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="bell" size={24} color={color} />
           ),
         }}
       />
     </Tabs>
+  );
+}
+
+export default function TabLayout() {
+  return (
+    <Provider store={store}>
+      <TabLayoutContent />
+    </Provider>
   );
 }
