@@ -1,12 +1,16 @@
 <<<<<<< HEAD
 import { View, Text, TouchableOpacity } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../Redux/auth/authSlice";
 import { useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Global from "@/constants/Global";
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { user } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -14,19 +18,31 @@ export default function HomeScreen() {
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-gray-800">
-        Bienvenue sur la page d'accueil
-      </Text>
-      <TouchableOpacity
-        className="mt-4 bg-red-500 p-3 rounded-md"
-        onPress={handleLogout}
+    <SafeAreaView style={Global.container}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: 16,
+          backgroundColor: "white",
+          borderBottomWidth: 1,
+          borderBottomColor: "#e5e7eb",
+        }}
       >
-        <Text className="text-white text-center font-medium">
-          Se déconnecter
+        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+          Hi, {user?.name}
         </Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity onPress={handleLogout}>
+          <FontAwesome name="sign-out" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontSize: 20, fontWeight: "bold", color: "#4b5563" }}>
+          Bienvenue sur la page d'accueil
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 =======
 import React from 'react';
