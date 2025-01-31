@@ -12,29 +12,35 @@ export default function Home() {
     const { posts, loading, hasMore } = useSelector((state) => state.post);
     const { isAuthenticated } = useSelector((state) => state.auth);
     const observer = useRef();
+    const loadingRef = useRef(false);
 
     const lastPostElementRef = useCallback(node => {
-        if (loading) return;
+        if (loading || !hasMore || loadingRef.current) return;
         if (observer.current) observer.current.disconnect();
-        
+
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && hasMore) {
-                dispatch(getPostsBefore());
+            if (entries[0].isIntersecting) {
+                loadingRef.current = true;
+                console.log("Observer déclenché, chargement de posts supplémentaires.");
+                dispatch(getPostsBefore()).then(() => {
+                    loadingRef.current = false;
+                });
             }
+        }, {
+            rootMargin: '100px', // Une marge pour déclencher plus tôt
+            threshold: 0.1
         });
-        
+
         if (node) observer.current.observe(node);
     }, [loading, hasMore, dispatch]);
 
     useEffect(() => {
-        dispatch(getPostsBefore());
-        
-        return () => {
-            if (observer.current) {
-                observer.current.disconnect();
-            }
-        };
-    }, [dispatch]);
+        // Charger seulement s'il n'y a aucun post
+        if (posts.length === 0) {
+            dispatch(getPostsBefore());
+        }
+        return () => observer.current?.disconnect();
+    }, [dispatch, posts.length]);
 
     useEffect(() => {
         return () => {
