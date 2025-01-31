@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image } from "react-native";
 
 type UserAvatarProps = {
   name: string;
@@ -8,39 +8,23 @@ type UserAvatarProps = {
 
 const getInitials = (name: string) => {
   return name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
+    .split("")
+    .map((word) => word[0])
+    .join("")
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 1);
 };
 
 const getRandomColor = (name: string) => {
-  const colors = [
-    'bg-blue-500',
-    'bg-green-500',
-    'bg-yellow-500',
-    'bg-red-500',
-    'bg-purple-500',
-    'bg-pink-500',
-  ];
+  const colors = ["bg-blue-500", "bg-red-500"];
   const index = name.length % colors.length;
   return colors[index];
 };
 
-export default function UserAvatar({ name, size = 56, imageUrl }: UserAvatarProps) {
+export default function UserAvatar({ name, size = 56 }: UserAvatarProps) {
   const initials = getInitials(name);
   const backgroundColor = getRandomColor(name);
-
-  if (imageUrl) {
-    return (
-      <Image
-        source={{ uri: imageUrl }}
-        className="rounded-full"
-        style={{ width: size, height: size }}
-      />
-    );
-  }
+  console.log("initials", initials);
 
   return (
     <View
