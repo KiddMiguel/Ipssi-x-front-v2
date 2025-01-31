@@ -15,7 +15,7 @@ export default function TabLayout() {
   const checkToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (!token) {
-      router.replace('/welcome');
+      router.replace('/(tabs)');
     } else {
       router.replace('/(tabs)/home');
     }
@@ -35,7 +35,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
           title: 'Accueil',
           tabBarIcon: ({ color }) => (

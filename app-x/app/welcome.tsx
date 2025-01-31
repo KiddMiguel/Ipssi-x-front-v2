@@ -19,7 +19,7 @@ export default function Welcome() {
       title: "X Social",
       description: "Explorez un monde de connexions infinies",
       icon: "rocket",
-      image: require('@/assets/images/onboarding1.png'),
+      image: require('@/assets/images/onboarding1.jpg'),
       IconComponent: MaterialCommunityIcons
     },
     {
@@ -27,7 +27,7 @@ export default function Welcome() {
       title: "Actualités",
       description: "Restez informé des dernières tendances mondiales",
       icon: "trending-up",
-      image: require('@/assets/images/onboarding2.png'),
+      image: require('@/assets/images/onboarding2.jpg'),
       IconComponent: FontAwesome5
     },
     {
@@ -35,7 +35,7 @@ export default function Welcome() {
       title: "Communauté",
       description: "Rejoignez une communauté dynamique et engagée",
       icon: "people",
-      image: require('@/assets/images/onboarding3.png'),
+      image: require('@/assets/images/onboarding3.jpg'),
       IconComponent: Ionicons
     }
   ];
