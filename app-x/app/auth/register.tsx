@@ -16,10 +16,10 @@ import Global from "@/constants/Global";
 
 export default function RegisterScreen() {
   const [credentials, setCredentials] = useState({
+    username: "",
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
 
   const router = useRouter();
@@ -27,11 +27,6 @@ export default function RegisterScreen() {
   const { status, error } = useSelector((state) => state.auth);
 
   const handleSubmit = async () => {
-    if (credentials.password !== credentials.confirmPassword) {
-      alert("Les mots de passe ne correspondent pas");
-      return;
-    }
-
     try {
       await dispatch(register(credentials)).unwrap();
       router.replace("/(tabs)/home");
@@ -55,6 +50,21 @@ export default function RegisterScreen() {
 
           {/* Form */}
           <View className="space-y-6">
+            {/* Username Input */}
+            <View>
+              <Text className="text-sm font-medium text-gray-700 mb-1">
+                Nom d'utilisateur
+              </Text>
+              <TextInput
+                className="w-full p-3 border border-gray-300 rounded-md bg-white"
+                placeholder="Nom d'utilisateur"
+                value={credentials.username}
+                onChangeText={(text) =>
+                  setCredentials({ ...credentials, username: text })
+                }
+              />
+            </View>
+
             {/* Name Input */}
             <View>
               <Text className="text-sm font-medium text-gray-700 mb-1">
@@ -98,22 +108,6 @@ export default function RegisterScreen() {
                 value={credentials.password}
                 onChangeText={(text) =>
                   setCredentials({ ...credentials, password: text })
-                }
-              />
-            </View>
-
-            {/* Confirm Password Input */}
-            <View>
-              <Text className="text-sm font-medium text-gray-700 mb-1">
-                Confirmez le mot de passe
-              </Text>
-              <TextInput
-                className="w-full p-3 border border-gray-300 rounded-md bg-white"
-                placeholder="••••••••"
-                secureTextEntry
-                value={credentials.confirmPassword}
-                onChangeText={(text) =>
-                  setCredentials({ ...credentials, confirmPassword: text })
                 }
               />
             </View>
