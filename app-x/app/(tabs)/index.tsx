@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/auth/authSlice";
 import { getPostsBefore } from "@/redux/Posts/postThunk";
 import { addPost } from "@/redux/Posts/postThunk";
@@ -18,12 +17,14 @@ import Global from "@/constants/Global";
 import PostCard from "@/components/PostCard/PostCard";
 import PostForm from "@/components/PostForm/PostForm";
 import UserAvatar from "@/components/UserAvatar";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 
 export default function HomeScreen() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const router = useRouter();
-  const { user } = useSelector((state : any) => state.auth);
-  const { posts, loading, hasMore } = useSelector((state: { post: { posts: any[]; loading: boolean; hasMore: boolean } }) => state.post);
+  const { user } = useAppSelector((state : any) => state.auth);
+  const { posts, loading, hasMore } = useAppSelector((state: { post: { posts: any[]; loading: boolean; hasMore: boolean } }) => state.post);
   console.log("user", user);
 
   useEffect(() => {

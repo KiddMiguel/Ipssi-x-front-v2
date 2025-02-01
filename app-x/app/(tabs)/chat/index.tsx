@@ -17,6 +17,8 @@ import { useRouter } from "expo-router";
 import ChatListItem from "@/components/ChatListItem";
 import Global from "@/constants/Global";
 import UserAvatar from "@/components/UserAvatar";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 
 interface OnlineUser {
   userId: string;
@@ -25,9 +27,9 @@ interface OnlineUser {
 }
 
 export default function ChatScreen() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const router = useRouter();
-  const { user, users, status } = useSelector((state: any) => state.auth);
+  const { user , users, status } = useAppSelector((state) => state.auth);
   const ws = useRef<WebSocket | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
 

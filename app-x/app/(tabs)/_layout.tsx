@@ -8,7 +8,9 @@ import "../../global.css";
 function TabLayoutContent() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { isAuthenticated, status } = useSelector((state) => state.auth);
+
+  // Ca pouvais passer avec ça aussi !
+  // const { isAuthenticated, status } = useSelector((state) => state.auth);
 
   useEffect(() => {
     checkToken();
