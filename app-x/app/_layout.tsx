@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Provider, useDispatch } from "react-redux";
-import store from "../redux/store";
+import {store} from "@/redux/store";
 import { loadInitialState, setUser } from "../redux/auth/authSlice";
 
 SplashScreen.preventAutoHideAsync();
@@ -57,12 +57,10 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Provider store={store}>
         <AppInitializer>
           <Slot />
         </AppInitializer>
       </Provider>
-    </ThemeProvider>
   );
 }

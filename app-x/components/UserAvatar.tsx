@@ -6,22 +6,26 @@ type UserAvatarProps = {
   imageUrl?: string;
 };
 
-const getInitials = (name: string) => {
+const getInitials = (name: string | undefined) => {
+  if (!name) return '?';
+  
   return name
-    .split("")
+    .split('')
     .map((word) => word[0])
-    .join("")
+    .join('')
     .toUpperCase()
     .slice(0, 1);
 };
 
-const getRandomColor = (name: string) => {
+const getRandomColor = (name: string | undefined) => {
   const colors = ["bg-blue-500"];
+  if (!name) return colors[0];
+  
   const index = name.length % colors.length;
   return colors[index];
 };
 
-export default function UserAvatar({ name, size = 56 }: UserAvatarProps) {
+export default function UserAvatar({ name = '', size = 56 }: UserAvatarProps) {
   const initials = getInitials(name);
   const backgroundColor = getRandomColor(name);
 

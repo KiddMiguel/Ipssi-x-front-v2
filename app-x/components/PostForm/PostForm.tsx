@@ -31,6 +31,7 @@ const PostForm: React.FC<PostFormProps> = ({ onSubmit }) => {
                     onChangeText={setContent}
                     style={styles.input}
                     placeholder="Quoi de neuf ?"
+                    placeholderTextColor="#9ca3af"
                     multiline
                     maxLength={280}
                 />
