@@ -17,7 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Global from "@/constants/Global";
 import PostCard from "../../components/PostCard/PostCard";
 import PostForm from "../../components/PostForm/PostForm";
-
+import UserAvatar from "@/components/UserAvatar";
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
@@ -72,10 +72,15 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={Global.container}>
+      {/* Header */}
       <View className="flex-row justify-between items-center p-4 bg-white border-b border-gray-300">
-        <Text className="text-lg font-bold">
-          Bonjour, {user?.name || "Utilisateur"}
-        </Text>
+
+                <View style={{ flexDirection: "row", alignItems: "center"}}>
+                <UserAvatar name={user?.name}  size={40} />
+                <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 8 }}>
+                  {user?.name}
+                </Text>
+                </View>
         <TouchableOpacity onPress={handleLogout}>
           <FontAwesome name="sign-out" size={24} color="black" />
         </TouchableOpacity>

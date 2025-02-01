@@ -1,3 +1,4 @@
+// src/redux/post/postSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import { getPosts, addPost, deletePost, getPostsBefore, likePost } from './postThunk';
 
@@ -78,18 +79,21 @@ export const postSlice = createSlice({
             state.loading = true;
         });
         builder.addCase(getPostsBefore.fulfilled, (state, action) => {
-            // Filtrer les doublons avant d'ajouter les nouveaux posts
             const newPosts = action.payload.filter(newPost => 
                 !state.posts.some(existingPost => existingPost._id === newPost._id)
             );
-            
+        
             state.posts = [...state.posts, ...newPosts];
             state.loading = false;
-            state.hasMore = newPosts.length > 0;
+            state.hasMore = action.payload.length === 10; 
+        
             if (newPosts.length > 0) {
                 state.lastTimestamp = newPosts[newPosts.length - 1].createdAt;
             }
+
+            console.log("Mise à jour de hasMore:", state.hasMore, "Nouveaux posts:", newPosts.length, "Total reçu:", action.payload.length);
         });
+        
         builder.addCase(getPostsBefore.rejected, (state, action) => {
             state.error = action.payload;
             state.loading = false;

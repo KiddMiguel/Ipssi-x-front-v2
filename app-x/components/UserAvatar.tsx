@@ -16,7 +16,7 @@ const getInitials = (name: string) => {
 };
 
 const getRandomColor = (name: string) => {
-  const colors = ["bg-blue-500", "bg-red-500"];
+  const colors = ["bg-blue-500"];
   const index = name.length % colors.length;
   return colors[index];
 };
@@ -24,7 +24,6 @@ const getRandomColor = (name: string) => {
 export default function UserAvatar({ name, size = 56 }: UserAvatarProps) {
   const initials = getInitials(name);
   const backgroundColor = getRandomColor(name);
-  console.log("initials", initials);
 
   return (
     <View

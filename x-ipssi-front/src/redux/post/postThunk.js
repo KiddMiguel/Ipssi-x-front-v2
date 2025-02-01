@@ -1,3 +1,4 @@
+// src/redux/post/postThunk.js
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import myAxios from '../../utils/interceptor';
 
@@ -28,27 +29,26 @@ export const getPosts = createAsyncThunk('post/getPosts', async (_, { rejectWith
     }
 });
 
-export const getPostsBefore = createAsyncThunk('post/getPostsBefore', 
+
+export const getPostsBefore = createAsyncThunk(
+    'post/getPostsBefore',
     async (_, { getState, rejectWithValue }) => {
         try {
-            const { posts, lastTimestamp } = getState().post;
-            // Utiliser le timestamp du dernier post ou la date actuelle
-            const timestamp = lastTimestamp || Date.now();
+            const state = getState();
+            const lastTimestamp = state.post.lastTimestamp || Date.now();
 
-            const response = await myAxios.get(`api/forum/before/${timestamp}`);
-            
-            // Filtrer les posts pour éviter les doublons
-            const newPosts = response.data.filter(newPost => 
-                !posts.some(existingPost => existingPost._id === newPost._id)
-            );
+            const response = await myAxios.get(`/api/forum/before/${lastTimestamp}  `);
 
-            return newPosts;
+            console.log("Réponse API:", response.data); // Debug pour vérifier la structure
+
+            return response.data; // Assurez-vous que c'est un tableau de posts
         } catch (error) {
-            console.log('error', error);
-            return rejectWithValue(error.response?.data || { message: "Une erreur est survenue" });
+            return rejectWithValue(error.response.data || 'Erreur inconnue');
         }
     }
 );
+
+
 
 export const likePost = createAsyncThunk('post/likePost', async (postId, { rejectWithValue }) => {
     try {

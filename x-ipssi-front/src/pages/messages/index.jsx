@@ -35,6 +35,7 @@ export default function Messages() {
     
     socket.onopen = () => {
       console.log('WebSocket connected');
+      // On envoie immédiatement l'authentification
       socket.send(JSON.stringify({
         type: 'auth',
         userId: user.id,
@@ -44,8 +45,13 @@ export default function Messages() {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log('Message reçu:', data);
       
       switch(data.type) {
+        case 'user_list':
+          console.log('Liste des utilisateurs en ligne:', data.users);
+          dispatch(setOnlineUsers(data.users));
+          break;
         case 'message_history':
           dispatch(setMessages(data.messages));
           break;
@@ -70,13 +76,19 @@ export default function Messages() {
             dispatch(setTyping(data.isTyping));
           }
           break;
-        // ... autres cas
+        default:
+          console.log('Type de message non géré:', data.type);
       }
     };
 
     setWs(socket);
     return () => socket.close();
-  }, [user.id, dispatch]);
+  }, [user.id, dispatch, selectedUser]);
+
+  // Log des changements d'utilisateurs en ligne
+  useEffect(() => {
+    console.log('Utilisateurs en ligne mis à jour:', onlineUsers);
+  }, [onlineUsers]);
 
   // Filtrer et organiser les utilisateurs
   const filteredAndSortedUsers = users
