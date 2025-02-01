@@ -1,5 +1,6 @@
 // app/(tabs)/chat/index.tsx
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { WS_URL } from "@/constants/Config";
 import {
   View,
   FlatList,
@@ -15,19 +16,74 @@ import { getUsers, logout } from "../../../redux/auth/authSlice";
 import { useRouter } from "expo-router";
 import ChatListItem from "@/components/ChatListItem";
 import Global from "@/constants/Global";
+import UserAvatar from "@/components/UserAvatar";
+
+interface OnlineUser {
+  userId: string;
+  username: string;
+  status: string;
+}
 
 export default function ChatScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { user, users, status } = useSelector((state : any) => state.auth);
+  const { user, users, status } = useSelector((state: any) => state.auth);
+  const ws = useRef<WebSocket | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
+
+  const handleLogout = async () => {
+    try {
+      if (ws.current) {
+        ws.current.close();
+      }
+      await dispatch(logout());
+      router.replace("/auth/login");
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
 
   useEffect(() => {
     dispatch(getUsers());
-  }, [dispatch]);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.replace("/auth/login");
+    // Initialisation WebSocket
+    ws.current = new WebSocket(WS_URL);
+
+    ws.current.onopen = () => {
+      console.log('WebSocket connected');
+      // Authentification de l'utilisateur
+      ws.current?.send(JSON.stringify({
+        type: 'auth',
+        userId: user.id,
+        username: user.username
+      }));
+    };
+
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'user_list') {
+        setOnlineUsers(data.users);
+      }
+    };
+
+    ws.current.onerror = (e) => {
+      console.error('WebSocket error:', e);
+    };
+
+    ws.current.onclose = () => {
+      console.log('WebSocket disconnected');
+    };
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [dispatch, user]);
+
+  // Fonction utilitaire pour vérifier si un utilisateur est en ligne
+  const isUserOnline = (userId: string): boolean => {
+    return onlineUsers.some(onlineUser => onlineUser.userId === userId);
   };
 
   if (status === "loading") {
@@ -59,9 +115,13 @@ export default function ChatScreen() {
           borderBottomColor: "#e5e7eb",
         }}
       >
-        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-          Hi, {user?.name}
+        
+        <View style={{ flexDirection: "row", alignItems: "center"}}>
+        <UserAvatar name={user?.name}  size={40} />
+        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 8 }}>
+          {user?.name}
         </Text>
+        </View>
         <TouchableOpacity onPress={handleLogout}>
           <FontAwesome name="sign-out" size={24} color="black" />
         </TouchableOpacity>
@@ -85,7 +145,7 @@ export default function ChatScreen() {
             name={item.username}
             lastMessage={item.lastMessage || "No messages"}
             time={item.time || ""}
-            isOnline={item.isOnline || false}
+            isOnline={isUserOnline(item.id)}
           />
         )}
         className="flex-1"
