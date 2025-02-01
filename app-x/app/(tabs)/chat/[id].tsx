@@ -1,51 +1,144 @@
-import { useState } from 'react';
+// app/(tabs)/chat/[id].tsx
+import { useState, useEffect, useRef } from 'react';
 import { View, TextInput, FlatList, KeyboardAvoidingView, Platform, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import MessageBubble from '@/components/MessageBubble';
 import Global from '@/constants/Global';
+import { useSelector } from 'react-redux';
+import { WS_URL } from '@/constants/Config';
+
+interface Message {
+  id: string;
+  text: string;
+  time: string;
+  isOwn: boolean;
+  status: 'sent' | 'delivered' | 'read';
+}
+
+interface WebSocketMessage {
+  type: string;
+  messageId?: string;
+  content?: string;
+  senderId?: string;
+  timestamp?: string;
+  messages?: Array<{
+    messageId: string;
+    content: string;
+    senderId: string;
+    timestamp: string;
+  }>;
+}
+
+interface User {
+  id: string;
+  username: string;
+}
 
 export default function ConversationScreen() {
-  const { id, name } = useLocalSearchParams();
+  const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
   const router = useRouter();
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([
-    { 
-      id: '1', 
-      text: 'Bonjour ! Comment puis-je vous aider ?', 
-      time: '10:30', 
-      isOwn: false, 
-      status: 'read' 
-    },
-    { 
-      id: '2', 
-      text: 'Je voudrais avoir plus d\'informations sur vos services.', 
-      time: '10:31', 
-      isOwn: true, 
-      status: 'read' 
-    },
-    { 
-      id: '3', 
-      text: 'Bien sûr, je serais ravi de vous aider !', 
-      time: '10:32', 
-      isOwn: false, 
-      status: 'read' 
-    },
-  ]);
+  const [message, setMessage] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const ws = useRef<WebSocket | null>(null);
+  const { user } = useSelector((state: { auth: { user: User } }) => state.auth);
+  const [connectionError, setConnectionError] = useState<boolean>(false);
 
-  const sendMessage = () => {
-    if (message.trim()) {
-      setMessages(prev => [...prev, {
-        id: Date.now().toString(),
-        text: message,
-        time: new Date().toLocaleTimeString().slice(0, 5),
-        isOwn: true,
-        status: 'sent'
-      }]);
+  const sendMessage = (): void => {
+    if (message.trim() && ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify({
+        type: 'private_message',
+        recipientId: id,
+        content: message.trim()
+      }));
       setMessage('');
     }
   };
+
+  useEffect(() => {
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 3;
+
+    const connectWebSocket = (): void => {
+      try {
+        ws.current = new WebSocket(WS_URL);
+
+        ws.current.onopen = (): void => {
+          console.log('WebSocket connected');
+          setConnectionError(false);
+          ws.current.send(JSON.stringify({
+            type: 'auth',
+            userId: user.id,
+            username: user.username
+          }));
+        };
+
+        ws.current.onerror = (e: Event): void => {
+          console.error('WebSocket error:', e);
+          setConnectionError(true);
+          if (reconnectAttempts < maxReconnectAttempts) {
+            setTimeout(() => {
+              reconnectAttempts++;
+              connectWebSocket();
+            }, 2000 * reconnectAttempts);
+          }
+        };
+
+        ws.current.onmessage = (e: MessageEvent): void => {
+          const messageData: WebSocketMessage = JSON.parse(e.data);
+          switch (messageData.type) {
+            case 'private_message':
+              setMessages(prev => [...prev, {
+                id: messageData.messageId!,
+                text: messageData.content!,
+                time: new Date(messageData.timestamp!).toLocaleTimeString().slice(0, 5),
+                isOwn: messageData.senderId === user.id,
+                status: 'delivered'
+              }]);
+              break;
+            case 'message_history':
+              setMessages(messageData.messages!.map(msg => ({
+                id: msg.messageId,
+                text: msg.content,
+                time: new Date(msg.timestamp).toLocaleTimeString().slice(0, 5),
+                isOwn: msg.senderId === user.id,
+                status: 'delivered'
+              })));
+              break;
+          }
+        };
+
+        ws.current.onclose = (): void => {
+          console.log('WebSocket disconnected');
+        };
+
+      } catch (error) {
+        console.error('WebSocket connection error:', error);
+        setConnectionError(true);
+      }
+    };
+
+    connectWebSocket();
+    
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [user.id]);
+
+  if (connectionError) {
+    return (
+      <SafeAreaView style={Global.container}>
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-red-500">
+            Impossible de se connecter au serveur de chat.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={Global.container}>
@@ -86,7 +179,6 @@ export default function ConversationScreen() {
               value={message}
               onChangeText={setMessage}
               multiline
-              maxHeight={100}
             />
           </View>
           <Feather

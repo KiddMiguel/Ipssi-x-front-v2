@@ -37,13 +37,13 @@ const PostForm: React.FC<PostFormProps> = ({ onSubmit }) => {
                 <View style={styles.actions}>
                     <View style={styles.iconRow}>
                         <TouchableOpacity style={styles.iconButton}>
-                            <Feather name="image" size={24} color="blue" />
+                            <Feather name="image" size={24} color="#3b82f6" />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.iconButton}>
-                            <Feather name="film" size={24} color="blue" />
+                            <Feather name="film" size={24} color="#3b82f6" />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.iconButton}>
-                            <AntDesign name="barschart" size={24} color="blue" />
+                            <AntDesign name="barschart" size={24} color="#3b82f6" />
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     submitButton: {
-        backgroundColor: 'blue',
+        backgroundColor: '#3b82f6',
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 20,

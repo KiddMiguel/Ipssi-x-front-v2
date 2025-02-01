@@ -1,3 +1,4 @@
+// component/MessageBubble.tsx
 import { View, Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 

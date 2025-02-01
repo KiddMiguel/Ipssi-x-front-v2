@@ -1,3 +1,4 @@
+// app/(tabs)/chat/index.tsx
 import React, { useEffect } from "react";
 import {
   View,
@@ -10,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../../redux/auth/authSlice";
+import { getUsers, logout } from "../../../redux/auth/authSlice";
 import { useRouter } from "expo-router";
 import ChatListItem from "@/components/ChatListItem";
 import Global from "@/constants/Global";
@@ -18,7 +19,7 @@ import Global from "@/constants/Global";
 export default function ChatScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { user, users, status } = useSelector((state) => state.auth);
+  const { user, users, status } = useSelector((state : any) => state.auth);
 
   useEffect(() => {
     dispatch(getUsers());
