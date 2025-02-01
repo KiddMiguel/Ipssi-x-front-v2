@@ -34,6 +34,7 @@ export default function Messages() {
     const socket = new WebSocket('ws://localhost:8070');
     
     socket.onopen = () => {
+      console.log('WebSocket connected');
       socket.send(JSON.stringify({
         type: 'auth',
         userId: user.id,
