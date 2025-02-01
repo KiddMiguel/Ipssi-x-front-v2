@@ -29,7 +29,7 @@ export default function ChatListItem({
       className="flex-row items-center p-4 active:bg-gray-50"
       onPress={() => router.push(`/chat/${id}?name=${name}`)}
     >
-      <View className="relative mr-2">
+      <View className="relative" style={{marginRight: 16}}>
         <UserAvatar name={name} imageUrl={avatar} />
         {isOnline && (
           <View className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />

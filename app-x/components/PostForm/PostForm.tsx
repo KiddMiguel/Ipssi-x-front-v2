@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     },
     notification: {
         position: 'absolute',
-        bottom: 10,
+        bottom: 50,
         right: 10,
         padding: 10,
         borderRadius: 5,
@@ -124,8 +124,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'red',
     },
     notificationText: {
-        color: 'white',
+        color: 'green',
         fontWeight: 'bold',
+        
     },
 });
 

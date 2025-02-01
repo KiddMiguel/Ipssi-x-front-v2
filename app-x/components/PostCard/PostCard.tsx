@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
+import UserAvatar from '../UserAvatar';
 
 interface Post {
     _id: string;
@@ -19,9 +20,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     return (
         <View style={styles.card}>
             <View style={styles.row}>
-                <View style={styles.avatar}>
+                <UserAvatar name={post.name} size={40} />
+
+                {/* <View style={styles.avatar}>
                     <Text style={styles.avatarText}>{post.name.charAt(0).toUpperCase()}</Text>
-                </View>
+                </View> */}
                 <View style={styles.contentContainer}>
                     <View style={styles.header}>
                         <Text style={styles.name}>{post.name}</Text>

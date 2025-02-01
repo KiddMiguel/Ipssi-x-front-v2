@@ -140,7 +140,7 @@ export default function ChatScreen() {
       </View>
       <FlatList
         data={users}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item : any) => item.id}
         renderItem={({ item }) => (
           <ChatListItem
             id={item.id}
