@@ -1,7 +1,16 @@
-import React from "react";
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../Redux/auth/authSlice";
+import { logout } from "../../redux/auth/authSlice";
+import { getPostsBefore } from "../../redux/Posts/postSlice";
+import { addPost } from "../../redux/Posts/postThunk";
 import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,41 +18,56 @@ import Global from "@/constants/Global";
 import PostCard from "../../components/PostCard/PostCard";
 import PostForm from "../../components/PostForm/PostForm";
 
-const mockPosts = [
-  {
-    _id: "1",
-    name: "Alice Dupont",
-    author: "aliceD",
-    content: "Hello world! #ReactNative",
-    createdAt: new Date().toISOString(),
-    likes: ["user1", "user2"],
-  },
-  {
-    _id: "2",
-    name: "Jean Martin",
-    author: "jeanM",
-    content: "Une belle journée ☀️",
-    createdAt: new Date().toISOString(),
-    likes: ["user3"],
-  },
-  {
-    _id: "3",
-    name: "Claire Fontaine",
-    author: "claireF",
-    content: "React Native c'est top ! 🚀",
-    createdAt: new Date().toISOString(),
-    likes: [],
-  },
-];
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
   const { user } = useSelector((state) => state.auth);
+  const { posts, loading, hasMore } = useSelector((state) => state.post);
+  console.log("user", user);
+
+  useEffect(() => {
+    dispatch(getPostsBefore()); // Chargement initial des posts
+  }, [dispatch]);
+
+  const loadMorePosts = () => {
+    if (!loading && hasMore) {
+      dispatch(getPostsBefore());
+    }
+  };
 
   const handleLogout = () => {
     dispatch(logout());
     router.replace("/auth/login");
+  };
+
+  const handlePublishPost = async (content) => {
+    try {
+      const postData = {
+        name: user?.name || "Anonyme",
+        content: content,
+        author: user?.username || "anonymous",
+      };
+      
+      await dispatch(addPost(postData)).unwrap();
+      dispatch(getPostsBefore());
+    } catch (error) {
+      console.error("Erreur lors de la publication:", error);
+      Alert.alert("Erreur", "Impossible de publier le post");
+    }
+  };
+
+  const renderPost = ({ item }) => (
+    <PostCard post={item} />
+  );
+
+  const renderFooter = () => {
+    if (!loading) return null;
+    return (
+      <View className="py-4">
+        <ActivityIndicator size="small" color="#3b82f6" />
+      </View>
+    );
   };
 
   return (
@@ -57,16 +81,24 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* CONTENU PRINCIPAL */}
+      {/* Contenu principal */}
       <View className="flex-1 bg-white">
-        {/* Formulaire de publication */}
-        <PostForm />
-
-        {/* Liste des publications */}
+        <PostForm onSubmit={handlePublishPost} />
+        
         <FlatList
-          data={mockPosts}
+          data={posts}
+          renderItem={renderPost}
           keyExtractor={(item) => item._id}
-          renderItem={({ item }) => <PostCard post={item} />}
+          onEndReached={loadMorePosts}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          ListEmptyComponent={
+            <Text className="text-center text-gray-500 py-4">
+              Aucun post disponible
+            </Text>
+          }
+          refreshing={loading}
+          onRefresh={() => dispatch(getPostsBefore())}
         />
       </View>
     </SafeAreaView>

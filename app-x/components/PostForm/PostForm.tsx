@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
 
-const PostForm: React.FC = () => {
+interface PostFormProps {
+    onSubmit: (content: string) => void;
+}
+
+const PostForm: React.FC<PostFormProps> = ({ onSubmit }) => {
     const [content, setContent] = useState('');
     const [notification, setNotification] = useState<{ type: string, message: string } | null>(null);
 
@@ -13,8 +17,10 @@ const PostForm: React.FC = () => {
 
     const handleSubmit = () => {
         if (!content.trim()) return;
-        showNotification('success', 'Post publié avec succès !');
+        
+        onSubmit(content.trim());
         setContent('');
+        showNotification('success', 'Post publié avec succès !');
     };
 
     return (

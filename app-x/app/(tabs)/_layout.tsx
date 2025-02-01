@@ -3,8 +3,6 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Provider, useDispatch, useSelector } from "react-redux";
-import { store } from "../../Redux/store";
-import { login } from "../../Redux/auth/authSlice";
 import "../../global.css";
 
 function TabLayoutContent() {
@@ -21,8 +19,6 @@ function TabLayoutContent() {
       const token = await AsyncStorage.getItem("token");
       const userStr = await AsyncStorage.getItem("user");
       if (token && userStr) {
-        const user = JSON.parse(userStr);
-        await dispatch(login({ token, user }));
         router.replace("/(tabs)");
       } else {
         router.replace("/auth/login");
@@ -77,10 +73,4 @@ function TabLayoutContent() {
   );
 }
 
-export default function TabLayout() {
-  return (
-    <Provider store={store}>
-      <TabLayoutContent />
-    </Provider>
-  );
-}
+export default TabLayoutContent; 
