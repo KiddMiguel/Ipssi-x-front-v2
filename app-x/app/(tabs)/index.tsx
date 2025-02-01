@@ -18,6 +18,7 @@ import Global from "@/constants/Global";
 import PostCard from "../../components/PostCard/PostCard";
 import PostForm from "../../components/PostForm/PostForm";
 
+
 export default function HomeScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -71,7 +72,6 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={Global.container}>
-      {/* Header */}
       <View className="flex-row justify-between items-center p-4 bg-white border-b border-gray-300">
         <Text className="text-lg font-bold">
           Bonjour, {user?.name || "Utilisateur"}

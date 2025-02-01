@@ -1,9 +1,11 @@
+import React, { useEffect } from "react";
 import {
   View,
   FlatList,
   TextInput,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, FontAwesome } from "@expo/vector-icons";
@@ -16,48 +18,32 @@ import Global from "@/constants/Global";
 export default function ChatScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { user } = useSelector((state) => state.auth);
+  const { user, users, status } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
 
   const handleLogout = () => {
     dispatch(logout());
     router.replace("/auth/login");
   };
 
-  const chats = [
-    {
-      id: "1",
-      name: "John Doe",
-      lastMessage: "Salut, comment ça va ?",
-      time: "10:30",
-      unread: 2,
-      isOnline: true,
-    },
-    {
-      id: "2",
-      name: "Alice Smith",
-      avatar: "https://i.pravatar.cc/150?img=2", // Optionnel
-      lastMessage: "Le projet avance bien !",
-      time: "09:15",
-      unread: 0,
-      isOnline: true,
-    },
-    {
-      id: "3",
-      name: "Team X Project",
-      lastMessage: "Réunion à 14h 👍",
-      time: "Hier",
-      unread: 5,
-      isOnline: true,
-    },
-    {
-      id: "4",
-      name: "Sarah Wilson",
-      lastMessage: "Merci pour ton aide !",
-      time: "Hier",
-      unread: 0,
-      isOnline: false,
-    },
-  ];
+  if (status === "loading") {
+    return (
+      <SafeAreaView style={Global.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
+  }
+
+  if (status === "failed") {
+    return (
+      <SafeAreaView style={Global.container}>
+        <Text>Error loading data</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={Global.container}>
@@ -90,9 +76,17 @@ export default function ChatScreen() {
         </View>
       </View>
       <FlatList
-        data={chats}
+        data={users}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ChatListItem {...item} />}
+        renderItem={({ item }) => (
+          <ChatListItem
+            id={item.id}
+            name={item.username}
+            lastMessage={item.lastMessage || "No messages"}
+            time={item.time || ""}
+            isOnline={item.isOnline || false}
+          />
+        )}
         className="flex-1"
       />
     </SafeAreaView>
